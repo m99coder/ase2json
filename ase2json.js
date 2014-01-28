@@ -40,7 +40,8 @@ const CT_SPOT = 1;
 const CT_NORMAL = 2;
 
 
-var swapBytes = function swapBytes(buffer) {
+// swap bytes from big-endian to little-endian
+var swapBytes = function(buffer) {
   var l = buffer.length;
   if (l & 0x01) {
     throw new Error('Buffer length must be even');
@@ -51,6 +52,27 @@ var swapBytes = function swapBytes(buffer) {
     buffer[i+1] = a;
   }
   return buffer; 
+};
+
+// convert uint32 to single precision float
+var readFloat = function(buffer) {
+  var sign = ((buffer[0] >> 7) == 0) ? 1 : -1;
+  var exponent = ((buffer[0] >> 6) % 2 == 1) ? 1 : -127;
+  exponent+= (buffer[0] % 64) * 2;
+  exponent+= buffer[1] >> 7;
+
+  var base = 1.0;
+  for (var k=1; k<8; k++) {
+    base+= ((buffer[1] >> (7 - k)) % 2) * Math.pow(0.5, k);
+  }
+  for (var k=1; k<8; k++) {
+    base+= ((buffer[2] >> (7 - k)) % 2) * Math.pow(0.5, k + 8);
+  }
+  for (var k=1; k<8; k++) {
+    base+= ((buffer[3] >> (7 - k)) % 2) * Math.pow(0.5, k + 16);
+  }
+
+  return sign * Math.pow(2, exponent) * base;
 };
 
 
@@ -114,19 +136,22 @@ fs.readFile(file, function(err, data) {
               .buffer('colorName', vars.colorNameLength * 2)    // Color Name: colorNameLength * int16 (null terminated)
               .buffer('colorModel', 4);                         // Color Model: 4 * char
 
-            // TODO: convert int32 into single precision floating point
-            // TODO: convert CMYK to RGB
-            // R = (1 - C) * (1 - K)
-            // G = (1 - Y) * (1 - K)
-            // B = (1 - M) * (1 - K)
-
             // CMYK
             if (vars.colorModel.toString() == CM_CMYK) {
               
-              this.word32bu('cyan')                             // Color Definition: 4 * int32
-                .word32bu('magenta')
-                .word32bu('yellow')
-                .word32bu('black');
+              this.buffer('cyan', 4)                            // Color Definition: 4 * int32
+                .buffer('magenta', 4)
+                .buffer('yellow', 4)
+                .buffer('key', 4);
+
+              vars.cyanFloat = vars.cyan.readFloatBE(0);
+              vars.magentaFloat = vars.magenta.readFloatBE(0);
+              vars.yellowFloat = vars.yellow.readFloatBE(0);
+              vars.keyFloat = vars.key.readFloatBE(0);
+
+              vars.redFromCMYK = Math.round(((1 - vars.cyanFloat) * (1 - vars.keyFloat)) * 255);
+              vars.greenFromCMYK = Math.round(((1 - vars.yellowFloat) * (1 - vars.keyFloat)) * 255);
+              vars.blueFromCMYK = Math.round(((1 - vars.magentaFloat) * (1 - vars.keyFloat)) * 255);
 
             }
 
@@ -171,7 +196,19 @@ fs.readFile(file, function(err, data) {
 
               vars.groups[groupName][colorName] = {
                 'model': vars.colorModel.toString(),
-                'type': vars.colorType
+                'type': vars.colorType,
+                'cmyk': [
+                  vars.cyanFloat,
+                  vars.magentaFloat,
+                  vars.yellowFloat,
+                  vars.keyFloat
+                ],
+                'rgb': [
+                  vars.redFromCMYK,
+                  vars.greenFromCMYK,
+                  vars.blueFromCMYK
+                ],
+                'code': vars.redFromCMYK.toString(16) + vars.greenFromCMYK.toString(16) + vars.blueFromCMYK.toString(16)
               };
 
             } else {
