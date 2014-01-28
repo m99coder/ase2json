@@ -3,13 +3,10 @@
   "version": "0.1.0",
   "description": "Adobe Swatch Exchange (ASE) to JSON Converter",
   "main": "ase2json.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Marco Lehmann <m99coder@gmail.com>",
   "license": "MIT",
   "dependencies": {
-  	"binary": "0.3.0"
+    "binary": "0.3.0"
   },
   "repository": {
     "url": "https://github.com/m99coder/ase2json.git"
