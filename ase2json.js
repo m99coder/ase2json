@@ -54,27 +54,6 @@ var swapBytes = function(buffer) {
   return buffer; 
 };
 
-// convert uint32 to single precision float
-var readFloat = function(buffer) {
-  var sign = ((buffer[0] >> 7) == 0) ? 1 : -1;
-  var exponent = ((buffer[0] >> 6) % 2 == 1) ? 1 : -127;
-  exponent+= (buffer[0] % 64) * 2;
-  exponent+= buffer[1] >> 7;
-
-  var base = 1.0;
-  for (var k=1; k<8; k++) {
-    base+= ((buffer[1] >> (7 - k)) % 2) * Math.pow(0.5, k);
-  }
-  for (var k=1; k<8; k++) {
-    base+= ((buffer[2] >> (7 - k)) % 2) * Math.pow(0.5, k + 8);
-  }
-  for (var k=1; k<8; k++) {
-    base+= ((buffer[3] >> (7 - k)) % 2) * Math.pow(0.5, k + 16);
-  }
-
-  return sign * Math.pow(2, exponent) * base;
-};
-
 
 // read file
 fs.readFile(file, function(err, data) {
