@@ -169,6 +169,35 @@ fs.readFile(file, function(err, data) {
             colorName = colorName.substring(0, colorName.length - 1);
             
             groupName = (typeof vars.currentGroup != 'undefined') ? vars.currentGroup : null;
+
+            var color = {
+              'model': vars.colorModel.toString(),
+              'type': vars.colorType
+            };
+
+            if (vars.colorModel == CM_CMYK) {
+              color.cmyk = [
+                vars.cyanFloat,
+                vars.magentaFloat,
+                vars.yellowFloat,
+                vars.keyFloat
+              ];
+              color.rgb = [
+                vars.redFromCMYK,
+                vars.greenFromCMYK,
+                vars.blueFromCMYK
+              ];
+              color.code = vars.redFromCMYK.toString(16) + vars.greenFromCMYK.toString(16) + vars.blueFromCMYK.toString(16);
+            }
+
+            if (vars.colorModel == CM_RGB) {
+              color.rgb = [
+                vars.red,
+                vars.green,
+                vars.blue
+              ];                
+              color.code = vars.red.toString(16) + vars.green.toString(16) + vars.blue.toString(16);
+            }
             
             // insert into group if defined, otherwise root element
             if (groupName != null) {
@@ -177,43 +206,11 @@ fs.readFile(file, function(err, data) {
                 vars.groups[groupName] = {};
               }
 
-              var color = {
-                'model': vars.colorModel.toString(),
-                'type': vars.colorType
-              };
-
-              if (vars.colorModel == CM_CMYK) {
-                color.cmyk = [
-                  vars.cyanFloat,
-                  vars.magentaFloat,
-                  vars.yellowFloat,
-                  vars.keyFloat
-                ];
-                color.rgb = [
-                  vars.redFromCMYK,
-                  vars.greenFromCMYK,
-                  vars.blueFromCMYK
-                ];
-                color.code = vars.redFromCMYK.toString(16) + vars.greenFromCMYK.toString(16) + vars.blueFromCMYK.toString(16);
-              }
-
-              if (vars.colorModel == CM_RGB) {
-                color.rgb = [
-                  vars.red,
-                  vars.green,
-                  vars.blue
-                ];                
-                color.code = vars.red.toString(16) + vars.green.toString(16) + vars.blue.toString(16);
-              }
-
               vars.groups[groupName][colorName] = color;
 
             } else {
 
-              vars.groups[colorName] = {
-                'model': vars.colorModel.toString(),
-                'type': vars.colorType
-              };
+              vars.groups[colorName] = color;
 
             }
 
