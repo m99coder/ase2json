@@ -137,9 +137,13 @@ fs.readFile(file, function(err, data) {
             // RGB
             if (vars.colorModel.toString() == CM_RGB) {
 
-              this.word32bu('red')                              // Color Definition: 3 * int32
-                .word32bu('green')
-                .word32bu('blue');
+              this.buffer('red', 4)                             // Color Definition: 3 * int32
+                .buffer('green', 4)
+                .buffer('blue', 4);
+
+              vars.red = Math.round(vars.red.readFloatBE(0) * 255);
+              vars.green = Math.round(vars.green.readFloatBE(0) * 255);
+              vars.blue = Math.round(vars.blue.readFloatBE(0) * 255);
 
             }
 
@@ -173,22 +177,36 @@ fs.readFile(file, function(err, data) {
                 vars.groups[groupName] = {};
               }
 
-              vars.groups[groupName][colorName] = {
+              var color = {
                 'model': vars.colorModel.toString(),
-                'type': vars.colorType,
-                'cmyk': [
+                'type': vars.colorType
+              };
+
+              if (vars.colorModel == CM_CMYK) {
+                color.cmyk = [
                   vars.cyanFloat,
                   vars.magentaFloat,
                   vars.yellowFloat,
                   vars.keyFloat
-                ],
-                'rgb': [
+                ];
+                color.rgb = [
                   vars.redFromCMYK,
                   vars.greenFromCMYK,
                   vars.blueFromCMYK
-                ],
-                'code': vars.redFromCMYK.toString(16) + vars.greenFromCMYK.toString(16) + vars.blueFromCMYK.toString(16)
-              };
+                ];
+                color.code = vars.redFromCMYK.toString(16) + vars.greenFromCMYK.toString(16) + vars.blueFromCMYK.toString(16);
+              }
+
+              if (vars.colorModel == CM_RGB) {
+                color.rgb = [
+                  vars.red,
+                  vars.green,
+                  vars.blue
+                ];                
+                color.code = vars.red.toString(16) + vars.green.toString(16) + vars.blue.toString(16);
+              }
+
+              vars.groups[groupName][colorName] = color;
 
             } else {
 
