@@ -1,4 +1,7 @@
-#!/usr/local/bin/node
+/*
+ * Adobe Swatch Exchange (ASE) to JSON Converter
+ * Copyright © Marco Lehmann <m99coder@gmail.com> 2014
+ */
 
 // require modules
 var fs = require('fs'),
@@ -7,8 +10,7 @@ var fs = require('fs'),
 // read arguments
 var file = (process.argv[2]) ? process.argv[2] : null;
 if (file == null) {
-	console.error('ERROR, no file given\nUSAGE, ase-reader.js file');
-	exit();
+	return console.error('ERROR: no ASE file given\nUSAGE: node ase2json.js file.ase');
 }
 
 // block types
