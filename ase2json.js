@@ -129,8 +129,8 @@ fs.readFile(file, function(err, data) {
               vars.keyFloat = vars.key.readFloatBE(0);
 
               vars.redFromCMYK = Math.round(((1 - vars.cyanFloat) * (1 - vars.keyFloat)) * 255);
-              vars.greenFromCMYK = Math.round(((1 - vars.yellowFloat) * (1 - vars.keyFloat)) * 255);
-              vars.blueFromCMYK = Math.round(((1 - vars.magentaFloat) * (1 - vars.keyFloat)) * 255);
+              vars.greenFromCMYK = Math.round(((1 - vars.magentaFloat) * (1 - vars.keyFloat)) * 255);
+              vars.blueFromCMYK = Math.round(((1 - vars.yellowFloat) * (1 - vars.keyFloat)) * 255);
 
             }
 
@@ -187,7 +187,11 @@ fs.readFile(file, function(err, data) {
                 vars.greenFromCMYK,
                 vars.blueFromCMYK
               ];
-              color.code = vars.redFromCMYK.toString(16) + vars.greenFromCMYK.toString(16) + vars.blueFromCMYK.toString(16);
+              color.code =
+                ('00' + vars.redFromCMYK.toString(16)).slice(-2) +
+                ('00' + vars.greenFromCMYK.toString(16)).slice(-2) +
+                ('00' + vars.blueFromCMYK.toString(16)).slice(-2);
+              console.log(colorName, color);
             }
 
             if (vars.colorModel == CM_RGB) {
@@ -196,7 +200,10 @@ fs.readFile(file, function(err, data) {
                 vars.green,
                 vars.blue
               ];                
-              color.code = vars.red.toString(16) + vars.green.toString(16) + vars.blue.toString(16);
+              color.code =
+                ('00' + vars.red.toString(16)).slice(-2) +
+                ('00' + vars.green.toString(16)).slice(-2) +
+                ('00' + vars.blue.toString(16)).slice(-2);
             }
             
             // insert into group if defined, otherwise root element
@@ -227,6 +234,7 @@ fs.readFile(file, function(err, data) {
       console.log('Version: ' + vars.version.readUInt16BE(0) + '.' + vars.version.readUInt16BE(2));
       console.log('Number of Blocks: ' + vars.numOfBlocks.readUInt32BE(0));
 
+      /*
       var jsonFileName = path.dirname(file) + '/' + path.basename(file, '.ase') + '.json';
       
       // write json file
@@ -240,6 +248,7 @@ fs.readFile(file, function(err, data) {
         console.log('Successfully written to ' + jsonFileName);
   
       });
+      */
       
     });
 

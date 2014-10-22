@@ -1,6 +1,6 @@
 {
   "name": "ase2json",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Adobe Swatch Exchange (ASE) to JSON Converter",
   "main": "ase2json.js",
   "author": "Marco Lehmann <m99coder@gmail.com>",
