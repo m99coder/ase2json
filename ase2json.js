@@ -234,7 +234,6 @@ fs.readFile(file, function(err, data) {
       console.log('Version: ' + vars.version.readUInt16BE(0) + '.' + vars.version.readUInt16BE(2));
       console.log('Number of Blocks: ' + vars.numOfBlocks.readUInt32BE(0));
 
-      /*
       var jsonFileName = path.dirname(file) + '/' + path.basename(file, '.ase') + '.json';
       
       // write json file
@@ -248,7 +247,6 @@ fs.readFile(file, function(err, data) {
         console.log('Successfully written to ' + jsonFileName);
   
       });
-      */
       
     });
 
