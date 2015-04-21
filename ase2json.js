@@ -116,7 +116,7 @@ fs.readFile(file, function(err, data) {
               .buffer('colorModel', 4);                         // Color Model: 4 * char
 
             // CMYK
-            if (vars.colorModel.toString() == CM_CMYK) {
+            if (vars.colorModel.toString().trim() == CM_CMYK) {
               
               this.buffer('cyan', 4)                            // Color Definition: 4 * int32
                 .buffer('magenta', 4)
@@ -135,7 +135,7 @@ fs.readFile(file, function(err, data) {
             }
 
             // RGB
-            if (vars.colorModel.toString() == CM_RGB) {
+            if (vars.colorModel.toString().trim() == CM_RGB) {
 
               this.buffer('red', 4)                             // Color Definition: 3 * int32
                 .buffer('green', 4)
@@ -171,11 +171,11 @@ fs.readFile(file, function(err, data) {
             groupName = (typeof vars.currentGroup != 'undefined') ? vars.currentGroup : null;
 
             var color = {
-              'model': vars.colorModel.toString(),
+              'model': vars.colorModel.toString().trim(),
               'type': vars.colorType
             };
 
-            if (vars.colorModel == CM_CMYK) {
+            if (vars.colorModel.toString().trim() == CM_CMYK) {
               color.cmyk = [
                 vars.cyanFloat,
                 vars.magentaFloat,
@@ -194,7 +194,7 @@ fs.readFile(file, function(err, data) {
               console.log(colorName, color);
             }
 
-            if (vars.colorModel == CM_RGB) {
+            if (vars.colorModel.toString().trim() == CM_RGB) {
               color.rgb = [
                 vars.red,
                 vars.green,
